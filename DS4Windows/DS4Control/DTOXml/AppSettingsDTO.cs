@@ -342,6 +342,20 @@ namespace DS4WinWPF.DS4Control.DTOXml
             }
         }
 
+        [XmlElement("UseMoonlight")]
+        public bool UseMoonlight
+        {
+            get;
+            set;
+        }
+
+        [XmlElement("UseAdvancedMoonlight")]
+        public bool UseAdvancedMoonlight
+        {
+            get;
+            set;
+        }
+
         [XmlIgnore]
         public bool CloseMinimizes
         {
@@ -810,6 +824,8 @@ namespace DS4WinWPF.DS4Control.DTOXml
             DisconnectBTAtStop = source.disconnectBTAtStop;
             SwipeProfiles = source.swipeProfiles;
             QuickCharge = source.quickCharge;
+            UseMoonlight = source.useMoonlight;
+            UseAdvancedMoonlight = source.useAdvancedMoonlight;
             CloseMinimizes = source.closeMini;
             UseLang = source.useLang;
             DownloadLang = source.downloadLang;
@@ -903,6 +919,8 @@ namespace DS4WinWPF.DS4Control.DTOXml
             destination.disconnectBTAtStop = DisconnectBTAtStop;
             destination.swipeProfiles = SwipeProfiles;
             destination.quickCharge = QuickCharge;
+            destination.useMoonlight = UseMoonlight;
+            destination.useAdvancedMoonlight = UseAdvancedMoonlight;
             destination.closeMini = CloseMinimizes;
             destination.useLang = UseLang;
             destination.downloadLang = DownloadLang;

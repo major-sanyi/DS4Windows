@@ -155,8 +155,13 @@ namespace DS4WinWPF.DS4Control.DTOXml
         [XmlElement("DebouncingMs")]
         public int DebouncingMs
         {
-            get;
-            set;
+            get; set;
+        }
+
+        [XmlElement("UseDs3PitchRollSim")]
+        public bool UseDs3PitchRollSim
+        {
+            get; set;
         }
 
         [XmlElement("RumbleBoost")]
@@ -1459,6 +1464,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
             LightbarSettingInfo lightbarSettings = source.lightbarSettingInfo[deviceIndex];
             LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
 
+            UseDs3PitchRollSim = source.useDs3PitchRollSim;
             TouchToggle = source.enableTouchToggle[deviceIndex];
             IdleDisconnect = source.idleDisconnectTimeout[deviceIndex];
             OutputDataToDS4 = source.enableOutputDataToDS4[deviceIndex];
@@ -1976,12 +1982,13 @@ namespace DS4WinWPF.DS4Control.DTOXml
             destination.lightbarSettingInfo[deviceIndex].mode = LightbarMode;
             lightInfo.m_Led = _ledColor;
 
+            destination.useDs3PitchRollSim = UseDs3PitchRollSim;
+            destination.debouncingMs[deviceIndex] = DebouncingMs;
             destination.leftStickDriftXAxis[deviceIndex] = LeftStickDriftXAxis;
             destination.leftStickDriftYAxis[deviceIndex] = LeftStickDriftYAxis;
             destination.rightStickDriftXAxis[deviceIndex] = RightStickDriftXAxis;
             destination.rightStickDriftYAxis[deviceIndex] = RightStickDriftYAxis;
 
-            destination.debouncingMs[deviceIndex] = DebouncingMs;
             destination.rumble[deviceIndex] = RumbleBoost;
             destination.rumbleAutostopTime[deviceIndex] = RumbleAutostopTime;
             lightInfo.ledAsBattery = LedAsBatteryIndicator;
