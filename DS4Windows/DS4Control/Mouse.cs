@@ -203,13 +203,51 @@ namespace DS4Windows
             {
                 s = dev.getCurrentStateRef();
 
-                var triggerActive = IsGyroTriggerActive(outMode);
+                GyroControlsInfo controlsMapInfo = Global.GetGyroControlsInfo(deviceNum);
+                useReverseRatchet = controlsMapInfo.triggerTurns;
+                int i = 0;
+                string[] ss = controlsMapInfo.triggers.Split(',');
+                bool andCond = controlsMapInfo.triggerCond;
+                triggeractivated = andCond ? true : false;
+                if (!string.IsNullOrEmpty(ss[0]))
+                {
+                    string s = string.Empty;
+                    for (int index = 0, arlen = ss.Length; index < arlen; index++)
+                    {
+                        s = ss[index];
+                        if (andCond && !(int.TryParse(s, out i) && getDS4ControlsByName(i)))
+                        {
+                            triggeractivated = false;
+                            break;
+                        }
+                        else if (!andCond && int.TryParse(s, out i) && getDS4ControlsByName(i))
+                        {
+                            triggeractivated = true;
+                            break;
+                        }
+                    }
+                }
 
-                if (useReverseRatchet && triggerActive)
+                if (toggleGyroControls)
+                {
+                    if (triggeractivated && triggeractivated != previousTriggerActivated)
+                    {
+                        currentToggleGyroControls = !currentToggleGyroControls;
+                    }
+
+                    previousTriggerActivated = triggeractivated;
+                    triggeractivated = currentToggleGyroControls;
+                }
+                else
+                {
+                    previousTriggerActivated = triggeractivated;
+                }
+
+                if (useReverseRatchet && triggeractivated)
                 {
                     s.Motion.outputGyroControls = true;
                 }
-                else if (!useReverseRatchet && !triggerActive)
+                else if (!useReverseRatchet && !triggeractivated)
                 {
                     s.Motion.outputGyroControls = true;
                 }
@@ -222,10 +260,48 @@ namespace DS4Windows
             {
                 s = dev.getCurrentStateRef();
 
-                var triggerActive = IsGyroTriggerActive(outMode);
-                if (useReverseRatchet && triggerActive)
+                useReverseRatchet = Global.getGyroTriggerTurns(deviceNum);
+                int i = 0;
+                string[] ss = Global.getSATriggers(deviceNum).Split(',');
+                bool andCond = Global.getSATriggerCond(deviceNum);
+                triggeractivated = andCond ? true : false;
+                if (!string.IsNullOrEmpty(ss[0]))
+                {
+                    string s = string.Empty;
+                    for (int index = 0, arlen = ss.Length; index < arlen; index++)
+                    {
+                        s = ss[index];
+                        if (andCond && !(int.TryParse(s, out i) && getDS4ControlsByName(i)))
+                        {
+                            triggeractivated = false;
+                            break;
+                        }
+                        else if (!andCond && int.TryParse(s, out i) && getDS4ControlsByName(i))
+                        {
+                            triggeractivated = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (toggleGyroMouse)
+                {
+                    if (triggeractivated && triggeractivated != previousTriggerActivated)
+                    {
+                        currentToggleGyroMouse = !currentToggleGyroMouse;
+                    }
+
+                    previousTriggerActivated = triggeractivated;
+                    triggeractivated = currentToggleGyroMouse;
+                }
+                else
+                {
+                    previousTriggerActivated = triggeractivated;
+                }
+
+                if (useReverseRatchet && triggeractivated)
                     cursor.sixaxisMoved(arg);
-                else if (!useReverseRatchet && !triggerActive)
+                else if (!useReverseRatchet && !triggeractivated)
                     cursor.sixaxisMoved(arg);
                 else
                     cursor.mouseRemainderReset(arg);
@@ -236,11 +312,48 @@ namespace DS4Windows
                 s = dev.getCurrentStateRef();
                 Mapping.gyroStickX[deviceNum] = Mapping.gyroStickX[deviceNum] = 128;
 
-                var triggerActive = IsGyroTriggerActive(outMode);
+                useReverseRatchet = Global.GetGyroMouseStickTriggerTurns(deviceNum);
+                int i = 0;
+                string[] ss = Global.GetSAMouseStickTriggers(deviceNum).Split(',');
+                bool andCond = Global.GetSAMouseStickTriggerCond(deviceNum);
+                triggeractivated = andCond ? true : false;
+                if (!string.IsNullOrEmpty(ss[0]))
+                {
+                    string s = string.Empty;
+                    for (int index = 0, arlen = ss.Length; index < arlen; index++)
+                    {
+                        s = ss[index];
+                        if (andCond && !(int.TryParse(s, out i) && getDS4ControlsByName(i)))
+                        {
+                            triggeractivated = false;
+                            break;
+                        }
+                        else if (!andCond && int.TryParse(s, out i) && getDS4ControlsByName(i))
+                        {
+                            triggeractivated = true;
+                            break;
+                        }
+                    }
+                }
 
-                if (useReverseRatchet && triggerActive)
+                if (toggleGyroStick)
+                {
+                    if (triggeractivated && triggeractivated != previousTriggerActivated)
+                    {
+                        currentToggleGyroStick = !currentToggleGyroStick;
+                    }
+
+                    previousTriggerActivated = triggeractivated;
+                    triggeractivated = currentToggleGyroStick;
+                }
+                else
+                {
+                    previousTriggerActivated = triggeractivated;
+                }
+
+                if (useReverseRatchet && triggeractivated)
                     SixMouseStick(arg);
-                else if (!useReverseRatchet && !triggerActive)
+                else if (!useReverseRatchet && !triggeractivated)
                     SixMouseStick(arg);
                 else
                     SixMouseReset(arg);
@@ -250,7 +363,6 @@ namespace DS4Windows
                 s = dev.getCurrentStateRef();
 
                 GyroDirectionalSwipeInfo swipeMapInfo = Global.GetGyroSwipeInfo(deviceNum);
-
                 useReverseRatchet = swipeMapInfo.triggerTurns;
                 int i = 0;
                 string[] ss = swipeMapInfo.triggers.Split(',');
@@ -294,66 +406,6 @@ namespace DS4Windows
                         gyroSwipe.swipeUp = gyroSwipe.swipeDown = false;
                 }
             }
-        }
-
-        public bool IsGyroTriggerActive(GyroOutMode mode)
-        {
-            string[] ss = [];
-            var andCond = false;
-            useReverseRatchet = Global.getGyroTriggerTurns(deviceNum);
-            if (mode == GyroOutMode.Controls)
-            {
-                GyroControlsInfo controlsMapInfo = Global.GetGyroControlsInfo(deviceNum);
-                ss = controlsMapInfo.triggers.Split(',');
-                andCond = controlsMapInfo.triggerCond;
-            }
-            else if (mode == GyroOutMode.Mouse)
-            {
-                ss = Global.getSATriggers(deviceNum).Split(',');
-                andCond = Global.getSATriggerCond(deviceNum);
-            }
-            else if (mode == GyroOutMode.MouseJoystick)
-            {
-                useReverseRatchet = Global.GetGyroMouseStickTriggerTurns(deviceNum);
-                ss = Global.GetSAMouseStickTriggers(deviceNum).Split(',');
-                andCond = Global.GetSAMouseStickTriggerCond(deviceNum);
-            }
-            var i = 0;
-            triggeractivated = andCond;
-            if (!string.IsNullOrEmpty(ss[0]))
-            {
-                var str = string.Empty;
-                for (int index = 0, arlen = ss.Length; index < arlen; index++)
-                {
-                    str = ss[index];
-                    if (andCond && !(int.TryParse(str, out i) && getDS4ControlsByName(i)))
-                    {
-                        triggeractivated = false;
-                        break;
-                    }
-                    else if (!andCond && int.TryParse(str, out i) && getDS4ControlsByName(i))
-                    {
-                        triggeractivated = true;
-                        break;
-                    }
-                }
-            }
-            if (toggleGyroControls)
-            {
-                if (triggeractivated && triggeractivated != previousTriggerActivated)
-                {
-                    currentToggleGyroControls = !currentToggleGyroControls;
-                }
-
-                previousTriggerActivated = triggeractivated;
-                triggeractivated = currentToggleGyroControls;
-            }
-            else
-            {
-                previousTriggerActivated = triggeractivated;
-            }
-
-            return triggeractivated;
         }
 
         private OneEuroFilterPair filterPair = new OneEuroFilterPair();

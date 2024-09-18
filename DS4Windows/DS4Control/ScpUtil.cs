@@ -1611,18 +1611,6 @@ namespace DS4Windows
             get { return m_Config.quickCharge; }
         }
 
-        public static bool UseMoonlight
-        {
-            get => m_Config.useMoonlight;
-            set => m_Config.useMoonlight = value;
-        }
-
-        public static bool UseAdvancedMoonlight
-        {
-            get => m_Config.useAdvancedMoonlight;
-            set => m_Config.useAdvancedMoonlight = value;
-        }
-
         public static bool getQuickCharge()
         {
             return m_Config.quickCharge;
@@ -1901,12 +1889,6 @@ namespace DS4Windows
         }
 
         public static event EventHandler DebouncingMsChanged;
-
-        public static bool UseDs3PitchRollSim
-        {
-            get => m_Config.useDs3PitchRollSim;
-            set => m_Config.useDs3PitchRollSim = value;
-        }
 
         // controller/profile specfic values
         public static ButtonMouseInfo[] ButtonMouseInfos => m_Config.buttonMouseInfos;
@@ -3658,8 +3640,6 @@ namespace DS4Windows
         public bool swipeProfiles = DEFAULT_SWIPE_PROFILES;
         public bool ds4Mapping = false;
         public bool quickCharge = false;
-        public bool useMoonlight = false;
-        public bool useAdvancedMoonlight = false;
         public bool closeMini = false;
         public List<SpecialAction> actions = new List<SpecialAction>();
         public List<DS4ControlSettings>[] ds4settings = new List<DS4ControlSettings>[Global.TEST_PROFILE_ITEM_COUNT]
@@ -3738,7 +3718,6 @@ namespace DS4Windows
         {
             0, 0, 0, 0, 0, 0, 0, 0, 0
         };
-        public bool useDs3PitchRollSim = false;
 
         public ControlServiceDeviceOptions deviceOptions =
             new ControlServiceDeviceOptions();

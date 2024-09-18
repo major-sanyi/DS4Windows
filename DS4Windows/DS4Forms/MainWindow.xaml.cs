@@ -199,6 +199,7 @@ namespace DS4WinWPF.DS4Forms
 
             // Log exceptions that might occur
             Util.LogAssistBackgroundTask(tempTask);
+
 #if !BETA_VERSION
             tempTask = Task.Delay(100).ContinueWith((t) =>
             {
@@ -788,7 +789,7 @@ Suspend support not enabled.", true);
             ChangeService();
         }
 
-        public async void ChangeService()
+        private async void ChangeService()
         {
             StartStopBtn.IsEnabled = false;
             App root = Application.Current as App;

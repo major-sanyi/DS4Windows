@@ -18,7 +18,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,7 +28,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using DS4WinWPF.DS4Forms.ViewModels;
 using DS4Windows;
@@ -72,22 +70,11 @@ namespace DS4WinWPF.DS4Forms
             deviceOptsVM.CurrentTabSelectedIndex = tabIdx;
         }
 
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = e.Uri.AbsoluteUri,
-                UseShellExecute = true
-            });
-            e.Handled = true;
-        }
-
         private void Window_Closed(object sender, EventArgs e)
         {
             deviceOptsVM.SaveControllerConfigs();
 
             devOptionsDockPanel.DataContext = null;
         }
-
     }
 }

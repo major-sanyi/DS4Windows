@@ -337,7 +337,7 @@ namespace DS4Windows.InputDevices
 
                         if (synced)
                         {
-                            sixAxis.handleDS3Sixaxis(pbGyro, pbAccel, cState, elapsedDeltaTime, deviceSlotNumber);
+                            sixAxis.handleDS3Sixaxis(pbGyro, pbAccel, cState, elapsedDeltaTime);
                         }
                     }
 
