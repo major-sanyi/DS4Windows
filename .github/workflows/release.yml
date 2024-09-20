@@ -56,7 +56,7 @@ jobs:
     - name: Post-Build script X64
       run: .\utils\post-build.py .\bin\x64\Release\output . ${{env.VERSION}}
     - name: Publish release Build X64
-      run: gh release upload ${{github.event.release.tag_name}} .\bin\x86\Release\DS4Windows_${{env.VERSION}}_x64.zip
+      run: gh release upload ${{github.event.release.tag_name}} .\bin\x64\Release\DS4Windows_${{env.VERSION}}_x64.zip
       env:
         GITHUB_TOKEN: ${{ github.TOKEN }}
     - name: Build X86
@@ -79,8 +79,7 @@ jobs:
             echo Version: $VERSION
             echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: update newest.txt
-        run: ${{ env.VERSION }} > .\DS4Windows\newest.txt
-        shell: bash
+        run: echo ${{ env.VERSION }} > .\DS4Windows\newest.txt
       - name: push newest.txt
         run: |
             git config --local user.name "GitHub Action"
