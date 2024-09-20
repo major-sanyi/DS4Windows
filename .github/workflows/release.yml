@@ -33,7 +33,7 @@ jobs:
       if: success() || failure()    # run this step even if previous step failed
       with:
         name: test-results
-        path: test-results.trx
+        path: DS4WindowsTests\TestResults\test-results.trx
         reporter: dotnet-trx
       
   release:
@@ -82,8 +82,8 @@ jobs:
   update-release-version:
     runs-on: ubuntu-latest
     needs: release
-    #only update master on normal releases.
-    if: ${{!github.event.release.isPrerelease}}
+    #only update master on normal latest releases.
+    if: ${{!github.event.release.isPrerelease && github.event.release.isLatest }}
     steps:
       - uses: actions/checkout@v4
         with: 
