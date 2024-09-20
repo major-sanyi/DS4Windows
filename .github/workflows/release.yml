@@ -1,0 +1,89 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  release:
+    types: [published,prereleased]
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+      
+  release:
+    runs-on: windows-latest
+    #this makes it not run if tests failed.
+    #disabled for now because the trigger is the github release creation.
+    #needs: test
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Set envars
+      run: | 
+        TAG=${{ github.event.release.tag_name }}
+        VERSION=${TAG#v}
+        echo Version: $VERSION
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        echo "SHORT_VERSION=${VERSION%-*}" >> $GITHUB_ENV
+      shell: bash
+    - name: Build X64
+      run: dotnet publish .\DS4Windows\DS4WinWPF.csproj -c Release  /p:platform=x64 /p:AssemblyVersion=${{ SHORT_VERSION }} /p:FileVersion=${{ SHORT_VERSION }} /p:Version=${{ VERSION }} -o .\bin\x64\Release\output
+    - name: Post-Build script X64
+      run: .\utils\post-build.py .\bin\x64\Release\output . ${{$VERSION}}
+    - name: Publish release Build X64
+      run: gh release upload ${{github.event.release.tag_name}} .\bin\x86\Release\DS4Windows_${{VERSION}}_x64.zip
+      env:
+        GITHUB_TOKEN: ${{ github.TOKEN }}
+    - name: Build X86
+      run: dotnet publish .\DS4Windows\DS4WinWPF.csproj -c Release  /p:platform=x86 /p:AssemblyVersion=${{ SHORT_VERSION }} /p:FileVersion=${{ SHORT_VERSION }} /p:Version=${{ VERSION }} -o .\bin\x86\Release\output
+    - name: Post-Build script X86
+      run: .\utils\post-build.py .\bin\x86\Release\output . ${{$VERSION}}
+    - name: Publish release Build X86
+      run: gh release upload ${{github.event.release.tag_name}} .\bin\x86\Release\DS4Windows_${{VERSION}}_x86.zip
+      env:
+        GITHUB_TOKEN: ${{ github.TOKEN }}
+
+  update-release-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set envars
+        run: | 
+            TAG=${{ github.event.release.tag_name }}
+            VERSION=${TAG#v}
+            echo Version: $VERSION
+            echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: update newest.txt
+        run: ${{ VERSION }} > .\DS4Windows\newest.txt
+      - name: push newest.txt
+        run: |
+            git config --local user.name "GitHub Action"
+            git config --local user.email "action@github.com"
+            git add .\DS4Windows\newest.txt
+            git commit -m "Update newest.txt with ${{ VERSION }}"
+            git push
