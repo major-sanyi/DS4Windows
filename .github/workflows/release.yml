@@ -79,7 +79,7 @@ jobs:
             echo Version: $VERSION
             echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: update newest.txt
-        run: ${{ VERSION }} > .\DS4Windows\newest.txt
+        run: ${{ env.VERSION }} > .\DS4Windows\newest.txt
       - name: push newest.txt
         run: |
             git config --local user.name "GitHub Action"
