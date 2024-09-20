@@ -28,7 +28,12 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
+    - uses: dorny/test-reporter@v1
+      with:
+        name: test-results
+        path: test-results.trx
+        reporter: dotnet-trx
       
   release:
     runs-on: windows-latest
@@ -94,6 +99,6 @@ jobs:
         run: |
             git config user.name "github-actions[bot]"
             git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add .\DS4Windows\newest.txt
+            git add DS4Windows/newest.txt
             git commit -am "Update newest.txt with ${{ env.VERSION }}"
             git push origin master
