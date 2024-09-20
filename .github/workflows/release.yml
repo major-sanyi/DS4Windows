@@ -11,10 +11,14 @@ permissions:
   contents: write
 
 jobs:
+  # Checkout build and run tests. fails if build or tests are failing.
   test:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
+      #according to the docs this is the default, but this way it's sure
+      with:
+           ref: ${{ github.event.release.tag_name }}
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -29,10 +33,11 @@ jobs:
   release:
     runs-on: windows-latest
     #this makes it not run if tests failed.
-    #disabled for now because the trigger is the github release creation.
     #needs: test
     steps:
     - uses: actions/checkout@v4
+      with:
+           ref: ${{ github.event.release.tag_name }}
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -43,7 +48,7 @@ jobs:
         python-version: "3.10"
     - name: Restore dependencies
       run: dotnet restore
-    - name: Set envars
+    - name: Set envars for versions
       run: | 
         TAG=${{ github.event.release.tag_name }}
         VERSION=${TAG#v}
@@ -71,8 +76,12 @@ jobs:
   update-release-version:
     runs-on: ubuntu-latest
     needs: release
+    #only update master on normal releases.
+    if: ${{!isPrerelease}}
     steps:
       - uses: actions/checkout@v4
+        with: 
+            ref: master
       - name: Set envars
         run: | 
             TAG=${{ github.event.release.tag_name }}
